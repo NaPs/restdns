@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 
 from .fields import JSONField
-from .record_types import validate_parameters, RECORD_TYPES
+from .record_types import validate_parameters, validate_name, RECORD_TYPES
 
 
 class ExportMixIn(object):
@@ -37,7 +37,7 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     EXPORTABLES = ('name', 'refresh', 'retry', 'expire', 'minimum', 'serial', 'url')
     UPDATABLE = ('refresh', 'retry', 'expire', 'minimum')
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, validators=[validate_name, lambda x:x.rstrip('.')])
     refresh = models.IntegerField(default=86400)
     retry = models.IntegerField(default=7200)
     expire = models.IntegerField(default=3600000)
@@ -46,6 +46,9 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
 
     created_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
+
+    def clean(self):
+        self.name = self.name.rstrip('.')  # Strip the trailing dot of zone names
 
     @property
     def url(self):
@@ -75,7 +78,7 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
     TYPE_CHOICES = [(t, t.upper()) for t in RECORD_TYPES]
 
     zone = models.ForeignKey(Zone)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, validators=[validate_name])
     type = models.CharField(max_length=30, choices=TYPE_CHOICES)
     parameters = JSONField(default={})
 
