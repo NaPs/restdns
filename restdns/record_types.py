@@ -11,7 +11,11 @@ def validate_parameters(type, parameters):
             raise ValidationError({'parameters': 'Missing type parameter: %r' % name})
         else:
             try:
-                new_parameters[name] = validator(parameters[name])
+                validated = validator(parameters[name])
+                if validated is not None:
+                    new_parameters[name] = validated
+                else:
+                    new_parameters[name] = parameters[name]
             except ValidationError as err:
                 raise ValidationError({'parameters.%s' % name: err.message})
     return new_parameters
