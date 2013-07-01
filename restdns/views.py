@@ -3,6 +3,7 @@ from django.http import Http404
 
 from .rest import RESTView
 from .models import Zone, Record
+from .record_types import RECORD_TYPES
 
 
 class ZonesView(RESTView):
@@ -77,3 +78,9 @@ class RecordView(RESTView):
         if zone.id != record.zone.id:
             raise Http404()
         record.delete()
+
+
+class RecordTypesView(RESTView):
+
+    def get(self, request, response):
+        return dict((k, {'parameters': v.keys()})for k, v in RECORD_TYPES.iteritems())
