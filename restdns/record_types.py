@@ -1,4 +1,11 @@
+import re
+
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_ipv4_address, validate_ipv6_address
+
+
+RE_NAME = re.compile(r'^([\w]{1,2}|[\w][\w-]{0,61}[\w])'
+                     r'([.]([\w]{1,2}|[\w][\w-]{0,61}[\w]))*[.]?$')
 
 
 def validate_parameters(type, parameters):
@@ -21,9 +28,25 @@ def validate_parameters(type, parameters):
     return new_parameters
 
 
-def check_dummy(value):
-    return value
+def validate_name(value):
+    value = str(value)
+    if len(value) > 255:
+        raise ValidationError('Name is too long')
+    elif not RE_NAME.match(value):
+        raise ValidationError('Bad name')
 
 
-RECORD_TYPES = {'a': {'ip': check_dummy},
-                'aaaa': {'ipv6': check_dummy}}
+def validate_int(value):
+    value = int(value)
+    if not 0 <= value <= 65535:
+        raise ValidationError('Bad value, must be between the range 0-65535')
+
+
+RECORD_TYPES = {'a': {'ip': validate_ipv4_address},
+                'aaaa': {'ipv6': validate_ipv6_address},
+                'cname': {'name': validate_name},
+                'mx': {'pref': validate_int, 'name': validate_name},
+                'ns': {'name': validate_name},
+                'srv': {'priority': validate_int, 'weight': validate_int,
+                        'port': validate_int, 'target': validate_name},
+                'txt': {'text': lambda x:x}}
