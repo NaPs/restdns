@@ -15,7 +15,7 @@ def validate_parameters(type, parameters):
     new_parameters = {}
     for name, validator in parameters_validators.iteritems():
         if name not in parameters:
-            raise ValidationError({'parameters': 'Missing type parameter: %r' % name})
+            raise ValidationError({'parameters': ['Missing type parameter: %r' % name]})
         else:
             try:
                 validated = validator(parameters[name])
@@ -24,7 +24,7 @@ def validate_parameters(type, parameters):
                 else:
                     new_parameters[name] = parameters[name]
             except ValidationError as err:
-                raise ValidationError({'parameters.%s' % name: err.message})
+                raise ValidationError({'parameters.%s' % name: err.messages})
     return new_parameters
 
 
