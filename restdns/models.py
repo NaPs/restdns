@@ -36,7 +36,7 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     """
 
     EXPORTABLES = ('name', 'refresh', 'retry', 'expire', 'minimum', 'serial',
-                   'rname', 'primary_ns', 'url')
+                   'rname', 'primary_ns', 'url', 'records_url')
     UPDATABLE = ('refresh', 'retry', 'expire', 'minimum', 'rname', 'primary_ns')
 
     name = models.CharField(max_length=255, unique=True, validators=[validate_name, lambda x:x.rstrip('.')])
@@ -57,6 +57,11 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     @property
     def url(self):
         return self.get_absolute_url()
+
+    @property
+    @models.permalink
+    def records_url(self):
+        return 'records', [self.name]
 
     def __unicode__(self):
         return self.name
