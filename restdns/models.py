@@ -34,8 +34,9 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     """ A DNS zone.
     """
 
-    EXPORTABLES = ('name', 'refresh', 'retry', 'expire', 'minimum', 'serial', 'url')
-    UPDATABLE = ('refresh', 'retry', 'expire', 'minimum')
+    EXPORTABLES = ('name', 'refresh', 'retry', 'expire', 'minimum', 'serial',
+                   'rname', 'primary_ns', 'url')
+    UPDATABLE = ('refresh', 'retry', 'expire', 'minimum', 'rname', 'primary_ns')
 
     name = models.CharField(max_length=255, unique=True, validators=[validate_name, lambda x:x.rstrip('.')])
     refresh = models.IntegerField(default=86400)
@@ -43,6 +44,8 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     expire = models.IntegerField(default=3600000)
     minimum = models.IntegerField(default=172800)
     serial = models.IntegerField(default=0)
+    rname = models.CharField(max_length=255, validators=[validate_name])
+    primary_ns = models.CharField(max_length=255, validators=[validate_name])
 
     created_on = models.DateTimeField(auto_now=True, auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=True)
