@@ -82,7 +82,7 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
     TYPE_CHOICES = [(t, t.upper()) for t in RECORD_TYPES]
 
     zone = models.ForeignKey(Zone)
-    name = models.CharField(max_length=255, validators=[validate_name])
+    name = models.CharField(max_length=255, validators=[validate_name], blank=True)
     type = models.CharField(max_length=30, choices=TYPE_CHOICES)
     parameters = JSONField(default={})
 
