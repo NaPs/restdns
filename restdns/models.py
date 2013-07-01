@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.dispatch import receiver
 
 from .fields import JSONField
@@ -39,11 +40,11 @@ class Zone(models.Model, ExportMixIn, UpdateMixIn):
     UPDATABLE = ('refresh', 'retry', 'expire', 'minimum', 'rname', 'primary_ns')
 
     name = models.CharField(max_length=255, unique=True, validators=[validate_name, lambda x:x.rstrip('.')])
-    refresh = models.IntegerField(default=86400)
-    retry = models.IntegerField(default=7200)
-    expire = models.IntegerField(default=3600000)
-    minimum = models.IntegerField(default=172800)
-    serial = models.IntegerField(default=0)
+    refresh = models.IntegerField(default=86400, validators=[MinValueValidator(0), MaxValueValidator(2 ** 32 - 1)])
+    retry = models.IntegerField(default=7200, validators=[MinValueValidator(0), MaxValueValidator(2 ** 32 - 1)])
+    expire = models.IntegerField(default=3600000, validators=[MinValueValidator(0), MaxValueValidator(2 ** 32 - 1)])
+    minimum = models.IntegerField(default=172800, validators=[MinValueValidator(0), MaxValueValidator(2 ** 32 - 1)])
+    serial = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(2 ** 32 - 1)])
     rname = models.CharField(max_length=255, validators=[validate_name])
     primary_ns = models.CharField(max_length=255, validators=[validate_name])
 
