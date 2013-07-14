@@ -108,7 +108,11 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
 
 @receiver([post_save, post_delete], sender=Record)
 def increment_zone_serial(sender, instance, **kwargs):
-    instance.zone.save()  # Force serial of zone to be incremented
+    try:
+        instance.zone.save()  # Force serial of zone to be incremented
+    except Zone.DoesNotExist:
+        pass  # Handle the case where the zone is deleting and this signal
+              # triggered because of that.
 
 
 @receiver(pre_save, sender=Record)
