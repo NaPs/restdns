@@ -1,5 +1,9 @@
+import sys
+import json
+import traceback
+
 from django.shortcuts import get_object_or_404
-from django.http import Http404
+from django.http import Http404, HttpResponse
 
 from .rest import RESTView
 from .models import Zone, Record
@@ -84,3 +88,14 @@ class RecordTypesView(RESTView):
 
     def get(self, request, response):
         return dict((k, {'parameters': v.keys()})for k, v in RECORD_TYPES.iteritems())
+
+
+def error_500(request, template_name='500.html'):
+    """ View defining how to report 500 errors.
+    """
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    tb = traceback.format_tb(exc_traceback)
+    error = {'error': {'exception': str(exc_type), 'message': str(exc_value),
+                       'traceback': tb}}
+    return HttpResponse(json.dumps(error), statusgit=500,
+                        content_type='application/json')
