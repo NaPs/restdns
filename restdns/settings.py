@@ -90,6 +90,8 @@ LOGGING = {
     }
 }
 
+APPEND_SLASH = False
+
 try:
     from local_settings import *
 except ImportError:
