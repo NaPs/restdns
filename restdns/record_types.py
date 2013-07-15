@@ -49,4 +49,5 @@ RECORD_TYPES = {'a': {'ip': validate_ipv4_address},
                 'ns': {'name': validate_name},
                 'srv': {'priority': validate_int, 'weight': validate_int,
                         'port': validate_int, 'target': validate_name},
-                'txt': {'text': lambda x:x}}
+                'txt': {'text': lambda x:x},
+                'hinfo': {'hardware': lambda x:x, 'os': lambda x:x}}
