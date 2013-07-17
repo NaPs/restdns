@@ -55,16 +55,16 @@ class RecordsView(RESTView):
 
 class RecordView(RESTView):
 
-    def get(self, request, response, name, record_id):
+    def get(self, request, response, name, record_uuid):
         zone = get_object_or_404(Zone, name=name)
-        record = get_object_or_404(Record, id=record_id)
+        record = get_object_or_404(Record, uuid=record_uuid)
         if zone.id != record.zone.id:
             raise Http404()
         return record.export()
 
-    def put(self, request, response, name, record_id):
+    def put(self, request, response, name, record_uuid):
         zone = get_object_or_404(Zone, name=name)
-        record = get_object_or_404(Record, id=record_id)
+        record = get_object_or_404(Record, uuid=record_uuid)
         if zone.id != record.zone.id:
             raise Http404()
         record.update(request.body)
@@ -72,9 +72,9 @@ class RecordView(RESTView):
         record.save()
         return record.export()
 
-    def delete(self, request, response, name, record_id):
+    def delete(self, request, response, name, record_uuid):
         zone = get_object_or_404(Zone, name=name)
-        record = get_object_or_404(Record, id=record_id)
+        record = get_object_or_404(Record, uuid=record_uuid)
         if zone.id != record.zone.id:
             raise Http404()
         record.delete()

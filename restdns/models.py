@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.core.exceptions import ValidationError
@@ -81,11 +83,12 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
     """ A record for a DNS zone.
     """
 
-    EXPORTABLES = ('id', 'name', 'type', 'parameters', 'url')
+    EXPORTABLES = ('uuid', 'name', 'type', 'parameters', 'url')
     UPDATABLE = ('name', 'type', 'parameters')
 
     TYPE_CHOICES = [(t, t.upper()) for t in RECORD_TYPES]
 
+    uuid = models.CharField(max_length=36, unique=True, default=lambda: str(uuid.uuid4()))
     zone = models.ForeignKey(Zone)
     name = models.CharField(max_length=255, validators=[validate_name], blank=True)
     type = models.CharField(max_length=30, choices=TYPE_CHOICES)
@@ -103,7 +106,7 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'record', [self.zone.name, self.id]
+        return 'record', [self.zone.name, self.uuid]
 
 
 @receiver([post_save, post_delete], sender=Record)
