@@ -1,0 +1,5 @@
+restdns (1.1-1) wheezy; urgency=low
+
+  * Initial release of the package.
+
+ -- Antoine Millet <antoine@inaps.org>  Sun, 21 Jul 2013 18:56:37 +0200

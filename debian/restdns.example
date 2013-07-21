@@ -1,0 +1,11 @@
+CONFIG = {
+    'mode': 'django',
+    'user': 'restdns',
+    'group': 'restdns',
+    'args': (
+        '--bind=127.0.0.1:9001',
+        '--workers=2',
+        '--worker-class=egg:gunicorn#sync',
+        'restdns.settings',
+    ),
+}
