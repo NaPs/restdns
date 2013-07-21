@@ -3,6 +3,8 @@ import json
 
 from django.db import models
 
+from south.modelsinspector import add_introspection_rules
+
 
 class JSONField(models.TextField):
 
@@ -18,3 +20,6 @@ class JSONField(models.TextField):
 
     def get_prep_value(self, value):
         return json.dumps(value)
+
+
+add_introspection_rules([], ["^restdns\.fields\.JSONField"])

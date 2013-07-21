@@ -62,6 +62,7 @@ WSGI_APPLICATION = 'restdns.wsgi.application'
 TEMPLATE_DIRS = ()
 
 INSTALLED_APPS = (
+    'south',
     'django.contrib.staticfiles',
     'restdns'
 )
