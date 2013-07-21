@@ -98,6 +98,6 @@ except ImportError:
     pass
 
 try:
-    execfile('/etc/restsms.conf')
+    execfile('/etc/restdns.conf')
 except:
     pass
