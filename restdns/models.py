@@ -108,7 +108,8 @@ class Record(models.Model, ExportMixIn, UpdateMixIn):
         return 'record', [self.zone.name, self.uuid]
 
 
-@receiver([post_save, post_delete], sender=Record)
+@receiver(post_delete, sender=Record)
+@receiver(post_save, sender=Record)
 def increment_zone_serial(sender, instance, **kwargs):
     try:
         instance.zone.save()  # Force serial of zone to be incremented
