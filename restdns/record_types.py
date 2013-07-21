@@ -9,7 +9,7 @@ RE_NAME = re.compile(r'^([\w]{1,2}|[\w][\w-]{0,61}[\w])'
 
 
 def validate_parameters(type, parameters):
-    parameters_validators = RECORD_TYPES.get(type)
+    parameters_validators = RECORD_TYPES.get(type.lower())
     if parameters is None:
         return parameters
     new_parameters = {}
