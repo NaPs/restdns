@@ -65,6 +65,266 @@ RestDNS application. Here is an example for nginx::
         }
     }
 
+REST API
+--------
+
+Zones
+~~~~~
+
+Properties:
+
+- name (string, read): name of the zone (without the final dot)
+- refresh (integer, read/write): refresh delay value
+- retry (integer, read/write): retry delay value
+- expire (integer, read/write): expire delay value
+- minimum (integer, read/write): minimum delay value
+- rname (string, read/write): administrator email adress
+- primary_ns (string, read/write): primary name-server address
+- serial (integer, read): serial number
+- url (string, read): url to the zone
+- records_url (string, read): url to zone records
+
+List all zones
+^^^^^^^^^^^^^^
+
+Request::
+
+    GET /zones
+
+Reponse::
+
+    < 200
+    < Content-Type: application/json
+
+    {
+        "zones": [
+            {"name": "example.com",
+             "refresh": 300,
+             "retry": 300,
+             "expire": 604800,
+             "minimum": 86400,
+             "rname": "admin.example.com.",
+             "primary_ns": "ns.example.net."
+             "serial": 42,
+             "url": "/zones/example.com",
+             "records_url": "zones/example.com/records"},
+            {"name": "my.lan",
+             "refresh": 300,
+             "retry": 300,
+             "expire": 604800,
+             "minimum": 86400,
+             "rname": "admin.my.lan.",
+             "primary_ns": "ns.my.lan."
+             "serial": 21,
+             "url": "/zones/my.lan",
+             "records_url": "zones/my.lan/records"},
+        ]
+    }
+
+Create a new zone
+^^^^^^^^^^^^^^^^^
+
+Request::
+
+    POST /zones
+    > Content-Type: application/json
+
+    {"name": "exemple.fr",
+     "refresh": 300,
+     "retry": 300,
+     "expire": 604800,
+     "minimum": 86400,
+     "rname": "admin.example.fr.",
+     "primary_ns": "ns.example.org."}
+
+Response::
+
+    < 201
+    < Location: /zones/example.fr
+    < Content-Type: application/json
+
+    {"name": "exemple.fr",
+     "refresh": 300,
+     "retry": 300,
+     "expire": 604800,
+     "minimum": 86400,
+     "rname": "admin.example.fr.",
+     "primary_ns": "ns.example.org.",
+     "serial": 1,
+     "url": "/zones/example.fr",
+     "records_url": "/zones/example.fr/records"}
+
+Get zone details
+^^^^^^^^^^^^^^^^
+
+Request::
+
+    GET /zones/example.com
+
+Response::
+
+    < 200
+    < Content-Type: application/json
+
+    {"name": "example.com",
+     "refresh": 300,
+     "retry": 300,
+     "expire": 604800,
+     "minimum": 86400,
+     "rname": "admin.example.com.",
+     "primary_ns": "ns.example.net."
+     "serial": 42,
+     "url": "/zones/example.com",
+     "records_url": "zones/example.com/records"},
+
+Modify a zone
+^^^^^^^^^^^^^
+
+Request::
+
+    PUT /zones/example.com
+    > Content-Type: application/json
+
+    {"refresh": 300,
+     "retry": 300,
+     "expire": 604800,
+     "minimum": 86400}
+
+Response::
+
+    < 200
+    < Content-Type: application/json
+
+    {"name": "exemple.fr",
+     "refresh": 300,
+     "retry": 300,
+     "expire": 604800,
+     "minimum": 86400,
+     "rname": "admin.example.fr.",
+     "primary_ns": "ns.example.org.",
+     "serial": 2,
+     "url": "/zones/example.fr",
+     "records_url": "/zones/example.fr/records"}
+
+Delete a zone
+^^^^^^^^^^^^^
+
+Request::
+
+    DELETE /zones/example.com
+
+Response::
+
+    < 204
+
+Records
+~~~~~~~
+
+Properties:
+
+- uuid (string, read): uuid of the record
+- name (string, read/write): name of the record
+- type (string, read/write): type of the record
+- parameters (object, read/write): object of parameters of the record according to the type
+- url (string, read/write): url of the record
+
+List all records for a zone
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Request::
+
+    GET /zones/example.com/records
+
+Response::
+
+    < 200
+    < Content-Type: application/json
+
+    {"records": [{"uuid": "fee3670a-fe68-4bb4-a926-009f0e01c41c",
+                  "name": "www",
+                  "type": "a",
+                  "parameters": {"ip": "127.0.0.1"},
+                  "url": "/zones/example.com/records/fee3670a-fe68-4bb4-a926-009f0e01c41c"},
+                 {"uuid": "671969b0-c88e-4a65-ac98-7d736e135bf3",
+                  "name": "www",
+                  "type": "aaaa",
+                  "parameters": {"ipv6": "::1"},
+                  "url": "/zones/example.com/records/671969b0-c88e-4a65-ac98-7d736e135bf3"}]}
+
+Create a new record
+^^^^^^^^^^^^^^^^^^^
+
+Request::
+
+    POST /zones/example.com/records
+    > Content-Type: application/json
+
+    {"name": "",
+     "type": "mx",
+     "parameters": {"pref": 5, "name": "mx.example.net"}}
+
+Response::
+
+    < 201
+    < Location: /zones/example.com/records/4901adf8-f26d-400a-8ac1-b978c116cff
+    < Content-Type: application/json
+
+    {"uuid": "4901adf8-f26d-400a-8ac1-b978c116cff5",
+     "name": "",
+     "type": "mx",
+     "parameters": {"pref": 5, "name": "mx.example.net"},
+     "url": "/zones/example.com/records/4901adf8-f26d-400a-8ac1-b978c116cff5"}
+
+Modify a record
+^^^^^^^^^^^^^^^
+
+Request::
+
+    PUT /zones/example.com/records/fee3670a-fe68-4bb4-a926-009f0e01c41c
+    > Content-Type: application/json
+
+    {"name": "www",
+     "type": "a",
+     "parameters": {"127.0.0.2"}}
+
+Response::
+
+    < 200
+    < Content-Type: application/json
+
+    {"uuid": "fee3670a-fe68-4bb4-a926-009f0e01c41c",
+     "name": "www",
+     "type": "a",
+     "parameters": {"ip": "127.0.0.2"},
+     "url": "/zones/example.com/records/fee3670a-fe68-4bb4-a926-009f0e01c41c"}}
+
+Delete a record
+^^^^^^^^^^^^^^^
+
+Request::
+
+    DELETE /zones/example.com/records/fee3670a-fe68-4bb4-a926-009f0e01c41c
+
+Response::
+
+    < 204
+
+List record types
+^^^^^^^^^^^^^^^^^
+
+Request::
+
+    GET /record/types
+
+Response::
+
+    < 200
+    < Content-Type: application/json
+
+    {"a": {"parameters": ["ip"]},
+     "aaaa": {"parameters": ["ipv6"]},
+     "mx": {"parameters": ["pref", "name"]}}
+
 Contribute
 ----------
 
