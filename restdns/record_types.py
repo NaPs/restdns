@@ -52,4 +52,5 @@ RECORD_TYPES = {'a': {'ip': validate_ipv4_address},
                 'txt': {'text': lambda x:x},
                 'hinfo': {'hardware': lambda x:x, 'os': lambda x:x},
                 'ptr': {'name': validate_name},
-                'spf': {'text': lambda x:x}}
+                'spf': {'text': lambda x:x},
+                'include': {'zone': validate_name}}

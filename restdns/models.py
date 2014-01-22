@@ -117,6 +117,15 @@ def increment_zone_serial(sender, instance, **kwargs):
         pass  # Handle the case where the zone is deleting and this signal
               # triggered because of that.
 
+    # Also increment serial of each zone using this one as a template:
+    records = Record.objects.filter(type='include').exclude(zone=instance.zone)
+    # Search for a template record which belongs to this zone:
+    updated_zones = set()
+    for record in records:
+        if record.parameters.get('zone') == instance.zone.name:
+            if record.zone not in updated_zones:
+                record.zone.save()
+                updated_zones.add(record.zone)
 
 @receiver(pre_save, sender=Record)
 def validate_record(sender, instance, **kwargs):
